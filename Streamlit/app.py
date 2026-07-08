@@ -1,17 +1,7 @@
 import streamlit as st
 import onnxruntime as ort
-from PIL import Image
-import numpy as np
+import numpy as np  # Streamlit sudah include versi yang kompatibel
 import os
-
-# ============================================
-# KONFIGURASI PAGE
-# ============================================
-st.set_page_config(
-    page_title="Potato Disease Classification",
-    page_icon="🥔",
-    layout="centered"
-)
 
 # ============================================
 # LOAD MODEL ONNX
@@ -45,14 +35,17 @@ st.markdown("Upload gambar daun kentang untuk deteksi penyakit")
 uploaded_file = st.file_uploader("Pilih gambar...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    # Tampilkan gambar
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Gambar yang diupload", use_column_width=True)
+    # Tampilkan gambar (Streamlit handle sendiri)
+    st.image(uploaded_file, caption="Gambar yang diupload", use_column_width=True)
     
     # Tombol prediksi
     if st.button("🔍 Prediksi"):
         with st.spinner("Sedang menganalisis..."):
-            # Preprocessing
+            # Preprocessing pakai Streamlit + NumPy
+            import io
+            from PIL import Image  # Streamlit sudah include Pillow
+            
+            image = Image.open(uploaded_file)
             image_resized = image.convert("RGB").resize((256, 256))
             img_array = np.expand_dims(np.array(image_resized).astype(np.float32), 0)
             
